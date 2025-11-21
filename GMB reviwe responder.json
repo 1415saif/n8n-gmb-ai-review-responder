@@ -1,0 +1,326 @@
+{
+  "name": "GMB reviwe responder (CLEANED)",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an expert SEO and customer relations manager of WebPlover — a professional technology company providing Application Development, Mobile App Development, Software Development, Marketing Solutions, and End-to-End Paid Media Management. Your task is to analyze a Google review and create a professional, polite, and natural reply as the manager of WebPlover. \n\n**Crucial Language Rule:** The response **MUST** be written entirely and exclusively in the same language as the review text. If the review is in Arabic, the entire response must be in Arabic. If the review is in English, the entire response must be in English. **Do not mix languages.**\n\nImportant: Only give me the exact reply message for the review. Do not include any additional explanation, reasoning, or commentary — only the response text that will be posted as the reply.\n\nHere’s how you should respond:\n\n1. Understand the tone of the review and star rating.\n2. Use warm, human, and polite language.\n3. Always represent WebPlover’s reputation positively.\n4. Never repeat the reviewer’s words exactly — rephrase naturally.\n5. Keep your reply within 3 sentences maximum depending on the tone.\n6. Use first-person plural (“we”, “our team”) to sound like a company.\n7. Add light SEO benefit by naturally mentioning “WebPlover” once in the reply.\n8. Always start the message by addressing the reviewer by their first name if available (for example, “Hi Ali,” or “Dear Sara,”).\n9. For negative reviews (1 or 2 stars), end the reply with a polite invitation to contact the support team at \tsupport@webplover.com for further assistance.\n10. If someone gives only a star rating and no text review, still create a polite and appropriate response based solely on the star rating.\n11. If someone gives only a text review and no star rating, still create a polite and appropriate response based solely on the text review\n\n---\n\n### 🔹 Behavior based on star rating:\n- ⭐⭐⭐⭐⭐ (5 stars): Express sincere gratitude and mention how happy you are to serve them. Optionally invite them to explore other WebPlover services.\n- ⭐⭐⭐⭐ (4 stars): Thank them warmly and mention you’ll continue improving.\n- ⭐⭐⭐ (3 stars): Appreciate the feedback and mention commitment to bettering their experience.\n- ⭐⭐ (2 stars): Apologize politely, show understanding, and offer to make things right. Invite them to email support@webplover.com.\n- ⭐ (1 star): Stay calm, express empathy, apologize professionally, and invite them to contact support@webplover.com for resolution.\n\n---\n\n### Example Input (English):\nReviewer Name: Ali Khan \nStar Rating: Five \nReview: \"Amazing software solution! The WebPlover team delivered exactly what we needed.\"\n\n### Example Output (English):\nHi Ali, \nThank you so much for your wonderful feedback! We're thrilled to hear that our team at WebPlover met your expectations. It means a lot to know you’re happy with our software development services. We look forward to working with you again!\n\n---\n\n### Example Input (Arabic):\nReviewer Name: Fatima Alsayed\nStar Rating: Five\nReview: \"خدمة رائعة جداً، ساعدوني في تطوير التطبيق بسرعة واحترافية عالية.\"\n\n### Example Output (Arabic):\nمرحباً فاطمة،\nشكراً جزيلاً على تقييمك الرائع! يسعد فريق WebPlover جداً بسماع أن خدمة تطوير التطبيقات لدينا قد نالت إعجابك. نحن نقدر ثقتك العالية بنا ونتطلع إلى خدمتك مرة أخرى قريباً.\n\n---\n\nNow generate a personalized, polite, and SEO-friendly reply using the above tone and logic. \nThe input will be provided as:\n- Reviewer Name:{{ $json['Reviewer Name'] }}\n- Review Text: {{ $json['Review Text'] }} \n- Star Rating: {{ $json.StarRating }}\n\n",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        -656,
+        -112
+      ],
+      "id": "41e8edb1-11ad-4589-949f-a3e27e766d5c",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-20b:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -688,
+        80
+      ],
+      "id": "b1405f9e-d8a5-4186-a4b7-f87e83851053",
+      "name": "OpenRouter Chat Model"
+      // CREDENTIALS REMOVED FOR GITHUB
+    },
+    {
+      "parameters": {
+        "resource": "review",
+        "operation": "reply",
+        "account": {
+          "__rl": true,
+          "value": "REMOVED_FOR_GITHUB",
+          "mode": "list",
+          "cachedResultName": "REMOVED_FOR_GITHUB"
+        },
+        "location": {
+          "__rl": true,
+          "value": "REMOVED_FOR_GITHUB",
+          "mode": "list",
+          "cachedResultName": "REMOVED_FOR_GITHUB"
+        },
+        "review": {
+          "__rl": true,
+          "value": "={{ $('Google Business Profile Trigger').item.json.reviewId }}",
+          "mode": "id"
+        },
+        "reply": "={{ $json.text }}",
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.googleBusinessProfile",
+      "typeVersion": 1,
+      "position": [
+        -160,
+        -112
+      ],
+      "id": "8feccce6-a3ec-4acc-94d0-37850f527a7c",
+      "name": "Reply to review"
+      // CREDENTIALS REMOVED FOR GITHUB
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "REMOVED_FOR_GITHUB",
+          "mode": "list",
+          "cachedResultName": "REMOVED_FOR_GITHUB",
+          "cachedResultUrl": "REMOVED_FOR_GITHUB"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "REMOVED_FOR_GITHUB"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $('Google Business Profile Trigger').item.json.reviewer.displayName }}",
+            "Review ID": "={{ $('Google Business Profile Trigger').item.json.reviewId }}",
+            "Review Text": "={{ $('Needed Fields').item.json['Review Text'] }}",
+            "Star Rating": "={{ $('Google Business Profile Trigger').item.json.starRating }}",
+            "AI Response": "={{ $json.comment }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Review ID",
+              "displayName": "Review ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Review Text",
+              "displayName": "Review Text",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Star Rating",
+              "displayName": "Star Rating",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "AI Response",
+              "displayName": "AI Response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        48,
+        -112
+      ],
+      "id": "1454021d-5f18-43f2-a380-938f417f9b4f",
+      "name": "Append row in sheet"
+      // CREDENTIALS REMOVED FOR GITHUB
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "account": {
+          "__rl": true,
+          "value": "REMOVED_FOR_GITHUB",
+          "mode": "list",
+          "cachedResultName": "REMOVED_FOR_GITHUB"
+        },
+        "location": {
+          "__rl": true,
+          "value": "REMOVED_FOR_GITHUB",
+          "mode": "list",
+          "cachedResultName": "REMOVED_FOR_GITHUB"
+        }
+      },
+      "type": "n8n-nodes-base.googleBusinessProfileTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1008,
+        -112
+      ],
+      "id": "9e36d0ad-63e0-4b6e-a584-cea4633daeeb",
+      "name": "Google Business Profile Trigger"
+      // CREDENTIALS REMOVED FOR GITHUB
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a6d43b05-e94f-4ad1-a7e3-c1a3765917cd",
+              "name": "Reviewer Name",
+              "value": "={{ $json.reviewer.displayName }}",
+              "type": "string"
+            },
+            {
+              "id": "3fd76fb9-550d-46fd-a837-45094fe085d5",
+              "name": "Review Text",
+              "value": "={{ $json.comment }}",
+              "type": "string"
+            },
+            {
+              "id": "863622b2-6bdd-46f2-952f-c816fe35d860",
+              "name": "Star Rating",
+              "value": "={{ $json.starRating }}",
+              "type": "string"
+            },
+            {
+              "id": "51cfa53a-9d8c-4240-8751-ddae9d58160b",
+              "name": "Review ID",
+              "value": "={{ $json.reviewId }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -832,
+        -112
+      ],
+      "id": "6e988bc9-fda6-4802-9f6e-586f57b8e072",
+      "name": "Needed Fields"
+    },
+    {
+      "parameters": {
+        "amount": 3,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -352,
+        -112
+      ],
+      "id": "5450efc6-b05b-40b3-bb2e-93cef6bd8664",
+      "name": "Wait",
+      "webhookId": "REMOVED_FOR_GITHUB"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reply to review": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Business Profile Trigger": {
+      "main": [
+        [
+          {
+            "node": "Needed Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Needed Fields": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Reply to review",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "e3fb0cca-351f-423d-9ecc-11b0d3955b4a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "REMOVED_FOR_GITHUB"
+  },
+  "id": "4RQ5aE9lz0rfTJO5",
+  "tags": []
+}
